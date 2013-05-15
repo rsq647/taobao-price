@@ -34,38 +34,26 @@ def getPriceTaobao(url):
 	return 'taobao   ' + url + '    ' + price
 	#return price
 
-def getPrice(url):
-	html = urllib2.urlopen(url)
-	soup = BeautifulSoup(html)
-	try:
-		cls = soup.find(id="deal-record")
-		param = cls.p
-		cons = param.contents;
-		price = cons[2].string
-		#name = soup.title.string
-	except:
-		price = '-1'
-	return url + '    ' + price
-	#return price
+def getPrice():
+	url_file = open('taobao.in', 'r')
+	result_file = open('taobao.out', 'w')
+	result_file.write('    page-url    ' + '    ' + 'price' + '    \n')
+	for url in url_file:
+		if not url:
+			continue
 
-url_file = open('taobao.in', 'r')
-result_file = open('taobao.out', 'w')
+		url = url.strip()
+		if url.startswith('http://item.taobao.com/'):
+			result = getPriceTaobao(url)
+		elif url.startswith('http://detail.tmall.com/'):
+			result = getPriceTmall(url)
+		else :
+			result = '------error----------'
+		print result
+		result_file.write(result + '\n')
 
-result_file.write('    page-url    ' + '    ' + 'price' + '    \n')
+	url_file.close()
+	result_file.close()
 
-for url in url_file:
-	if not url:
-		continue
-
-	url = url.strip()
-	if url.startswith('http://item.taobao.com/'):
-		result = getPriceTaobao(url)
-	elif url.startswith('http://detail.tmall.com/'):
-		result = getPriceTmall(url)
-	else :
-		result = '------error----------'
-	print result
-	result_file.write(result + '\n')
-
-url_file.close()
-result_file.close()
+if __name__ == '__main__':
+	getPrice()
